@@ -28,9 +28,19 @@ while tello.is_flying != True:
 if tello.is_flying == True:
     print("Take off success!")
 
+x = -200
+y = -200
+z = 0
+
+distance = math.sqrt(x**2 + y**2)
+newx = (distance- 152)/distance * x
+newy = (distance-152)/distance * y
+newz = (distance-152)/distance * z
 
 video_capture = cv2.VideoCapture(0)
 
+tello.go_xyz_speed(int(newx),int(newy),int(newz),20)
+#tello.go_xyz_speed(x,y,z,20)
 while(True):
     tello.rotate_clockwise(1)
     image = tello.get_frame_read().frame

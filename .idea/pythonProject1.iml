@@ -7,5 +7,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="superDuperFacialRecognition" />
+    <orderEntry type="module" module-name="Drone Kit" />
   </component>
 </module>
