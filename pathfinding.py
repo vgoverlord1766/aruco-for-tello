@@ -7,6 +7,7 @@ locations2 = locations[:]
 newX = 0
 newY = 0
 
+
 for int in range(0,len(locations)):
     shortLocation = []
     minDistance = 10000000000
