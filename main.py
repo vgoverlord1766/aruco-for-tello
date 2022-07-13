@@ -27,7 +27,7 @@ else:
 tello.streamon()
 time.sleep(2)
 tello.takeoff()
-tello.move_up(40)
+tello.move_up(60)
 while tello.is_flying != True:
     time.sleep(1)
 if tello.is_flying == True:
