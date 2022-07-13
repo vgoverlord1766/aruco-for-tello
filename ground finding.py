@@ -11,6 +11,7 @@ import cv2 as cv
 import sys
 import math
 
+#Tello setup
 tello = Tello()
 tello.connect()
 battery = tello.get_battery()
@@ -19,6 +20,7 @@ if battery <= 20:
 else:
     print("Battery: ", battery, "%")
 
+#Tello startup
 tello.streamon()
 time.sleep(2)
 tello.takeoff()
@@ -28,9 +30,18 @@ while tello.is_flying != True:
 if tello.is_flying == True:
     print("Take off success!")
 
-x = -200
-y = -200
-z = 0
+#Variable setup
+locations = ([20,20], [40, 60], [-100,-20], [30,-40])
+shortLocation = locations[0]
+for location in locations:
+    for location in locations:
+        newX = location[0]
+        newY = location[1]
+
+        minDistance = sys.maxint
+        if math.sqrt(x**2 + y**2) < minDistance
+            minDistance = math.sqrt(x**2 + y**2)
+            shortLocation = location
 
 distance = math.sqrt(x**2 + y**2)
 newx = (distance- 152)/distance * x
@@ -41,7 +52,7 @@ video_capture = cv2.VideoCapture(0)
 
 tello.go_xyz_speed(int(newx),int(newy),int(newz),20)
 #tello.go_xyz_speed(x,y,z,20)
-while(True):
+while(True):r
     tello.rotate_clockwise(1)
     image = tello.get_frame_read().frame
     aruco_dict = aruco.Dictionary_get(aruco.DICT_ARUCO_ORIGINAL)
