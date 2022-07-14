@@ -1,6 +1,5 @@
 import sys
 sys.path.append("..")
-import cv2
 from cv2 import aruco
 import imutils
 from djitellopy import Tello
@@ -10,6 +9,21 @@ import numpy as np
 import cv2 as cv
 import sys
 import math
+import csv
+import cv2
+
+file = open('locations.csv')
+csvreader = csv.reader(file)
+
+locations = []
+for row in csvreader:
+    locations.append(row)
+
+for row in locations:
+    row[0] = float(row[0])
+    row[1] = float(row[1])
+
+print(locations)
 
 tello = Tello()
 tello.connect()
@@ -19,15 +33,7 @@ if battery <= 20:
 else:
     print("Battery: ", battery, "%")
 
-tello.streamon()
-time.sleep(2)
-tello.takeoff()
-while tello.is_flying != True:
-    time.sleep(1)
-if tello.is_flying == True:
-    print("Take off success!")
 
-locations = [[-155.75, -155.75]]
 locations2 = locations[:]
 sortedLocations = []
 newX = 0
@@ -56,6 +62,14 @@ for int2 in range(0,len(locations)):
     print(shortLocation)
 
 print(sortedLocations)
+
+tello.streamon()
+time.sleep(2)
+tello.takeoff()
+while tello.is_flying != True:
+    time.sleep(1)
+if tello.is_flying == True:
+    print("Take off success!")
 
 for newLocation in sortedLocations:
     time.sleep(2)
