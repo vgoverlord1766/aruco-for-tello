@@ -13,7 +13,7 @@ import math
 
 tello = Tello()
 tello.connect()
-battery = tello.get_battery()cd
+battery = tello.get_battery()
 if battery <= 20:
     print("[WARNING]: Battery is low.", battery, "%")
 else:

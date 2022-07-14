@@ -13,7 +13,7 @@ import math
 
 tello = Tello()
 tello.connect()
-battery = tello.get_battery()cd
+battery = tello.get_battery()
 if battery <= 20:
     print("[WARNING]: Battery is low.", battery, "%")
 else:
@@ -27,7 +27,7 @@ while tello.is_flying != True:
 if tello.is_flying == True:
     print("Take off success!")
 
-locations = [[200, 20], [400, 20], [-100, -20], [600, -40]]
+locations = [[-155.75, -155.75]]
 locations2 = locations[:]
 sortedLocations = []
 newX = 0
@@ -37,7 +37,8 @@ currentY = 0;
 
 #0: forward, 1: right, 2: backwards, 3: left
 direction = 0;
-for int in range(0,len(locations)):
+for int2 in range(0,len(locations)):
+    tello.rotate_clockwise(1)
     shortLocation = []
     minDistance = 10000000000
     for location2 in locations2:
@@ -56,10 +57,16 @@ for int in range(0,len(locations)):
 
 print(sortedLocations)
 
-for location in sortedLocations:
-    tello.go_xyz_speed(location[0]-currentX - 142,location[1]-currentY, 100)
-    currentX = location[0]
-    currentY = location[1]
+for newLocation in sortedLocations:
+    time.sleep(2)
+    print(newLocation[0])
+    print(type(newLocation[0]))
+    x = int(newLocation[0])
+    y = int(newLocation[1])
+    time.sleep(2)
+    tello.go_xyz_speed(x - currentX - 40,y -currentY - 40, 0, 80)
+    currentX = newLocation[0]
+    currentY = newLocation[1]
     time.sleep(.5)
 
     while (True):
@@ -84,17 +91,9 @@ for location in sortedLocations:
                 print(id)
             break
         except:
-            print("no frames")
-            cv2.imshow('frame', gray)
-            if direction == 0:
-                tello.move_forward(20)
-            elif direction == 1:
-                tello.move_right(20)
-            elif direction == 2:
-                tello.move_back(40)
-            elif direction == 3:
-                tello.move_left(40)
-                forward = True
+            tello.rotate_clockwise(90)
+            tello.move_forward(40)
+            tello.move_left(40)
 
         if cv2.waitKey(1) == ord('m'):
             break
