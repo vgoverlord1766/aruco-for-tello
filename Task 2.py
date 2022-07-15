@@ -1,5 +1,6 @@
 import sys
 sys.path.append("..")
+import cv2
 from cv2 import aruco
 import imutils
 from djitellopy import Tello
@@ -9,21 +10,6 @@ import numpy as np
 import cv2 as cv
 import sys
 import math
-import csv
-import cv2
-
-file = open('locations.csv')
-csvreader = csv.reader(file)
-
-locations = []
-for row in csvreader:
-    locations.append(row)
-
-for row in locations:
-    row[0] = float(row[0])
-    row[1] = float(row[1])
-
-print(locations)
 
 tello = Tello()
 tello.connect()
@@ -33,7 +19,16 @@ if battery <= 20:
 else:
     print("Battery: ", battery, "%")
 
+tello.streamon()
+time.sleep(2)
+tello.takeoff()
+while tello.is_flying != True:
+    time.sleep(1)
+if tello.is_flying == True:
+    print("Take off success!")
+video_capture = cv2.VideoCapture(0)
 
+locations = [[-155.75, -155.75,7],[111.25,-200.25,8],[155.75,-66.75,9],[-66.75,203.25,2],[-66.75,111.25,3]]
 locations2 = locations[:]
 sortedLocations = []
 newX = 0
@@ -63,14 +58,6 @@ for int2 in range(0,len(locations)):
 
 print(sortedLocations)
 
-tello.streamon()
-time.sleep(2)
-tello.takeoff()
-while tello.is_flying != True:
-    time.sleep(1)
-if tello.is_flying == True:
-    print("Take off success!")
-
 for newLocation in sortedLocations:
     time.sleep(2)
     print(newLocation[0])
@@ -78,7 +65,7 @@ for newLocation in sortedLocations:
     x = int(newLocation[0])
     y = int(newLocation[1])
     time.sleep(2)
-    tello.go_xyz_speed(x - currentX - 40,y -currentY - 40, 0, 80)
+    tello.go_xyz_speed(int(x - currentX-120),int(y -currentY), 0, 80)
     currentX = newLocation[0]
     currentY = newLocation[1]
     time.sleep(.5)
@@ -102,15 +89,18 @@ for newLocation in sortedLocations:
 
         try:
             for id in ids:
-                print(id)
+                if id == newLocation[2]:
+                    print(id)
             break
         except:
             tello.rotate_clockwise(90)
-            tello.move_forward(40)
-            tello.move_left(40)
+            tello.move_forward(240)
+            tello.move_left(240)
+
 
         if cv2.waitKey(1) == ord('m'):
             break
+    time.sleep(3)
 
-tello.go_xyz_speed(0,0,100)
+tello.go_xyz_speed(0,0,0,100)
 tello.land()
