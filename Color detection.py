@@ -1,37 +1,56 @@
+from imutils.video import VideoStream
 import cv2
-import numpy as np
+import imutils
+import time
 
-# Create an object to read camera video
-cap = cv2.VideoCapture(0)
+greenLower = (29, 86, 6)
+greenUpper = (64, 255, 255)
+vs = VideoStream(src=0).start()
+time.sleep(2.0)
 
-video_cod = cv2.VideoWriter_fourcc(*'XVID')
-video_output = cv2.VideoWriter('captured_video.avi',
-                               video_cod,
-                               10,
-                               (640, 480))
-
-while (True):
-    _, frame = cap.read()
-
-    # Convert BGR to HSV
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-    lower = np.array([22, 70, 0])
-    upper = np.array([60, 255, 255])
-
-    mask = cv2.inRange(hsv, lower, upper)
-
-    output = cv2.bitwise_and(frame, frame, mask=mask)
-
-    cv2.imshow('output', output)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+# keep looping
+while True:
+	# grab the current frame
+    frame = vs.read()
+    if frame is None:
         break
+    frame = imutils.resize(frame, width=600)
+    blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+    hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+    mask = cv2.inRange(hsv, greenLower, greenUpper)
+    mask = cv2.erode(mask, None, iterations=2)
+    mask = cv2.dilate(mask, None, iterations=2)
+    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
+    center = None
 
-# release video capture
-# and video write objects
-cap.release()
-video_output.release()
+    # only proceed if at least one contour was found
+    if len(cnts) > 0:
+        print("Found tennis ball")
+        # find the largest contour in the mask, then use
+        # it to compute the minimum enclosing circle and
+        # centroid
+        c = max(cnts, key=cv2.contourArea)
+        ((x, y), radius) = cv2.minEnclosingCircle(c)
+        M = cv2.moments(c)
+        center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+        # only proceed if the radius meets a minimum size
+        if radius > 10:
+            # draw the circle and centroid on the frame,
+            # then update the list of tracked points
+            cv2.circle(frame, (int(x), int(y)), int(radius),
+                       (0, 255, 255), 2)
+            cv2.circle(frame, center, 5, (0, 0, 255), -1)
+    # update the points queue
+	# loop over the set of tracked points
 
-# Closes all the frames
+	# show the frame to our screen
+    cv2.imshow("Frame", frame)
+    key = cv2.waitKey(1) & 0xFF
+	# if the 'q' key is pressed, stop the loop
+    if key == ord("q"):
+        break
+\
+	vs.release()
+# close all windows
 cv2.destroyAllWindows()
